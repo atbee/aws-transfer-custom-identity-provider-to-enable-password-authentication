@@ -27,8 +27,11 @@ def lambda_handler(event, context):
     input_sourceIp = event["sourceIp"]
     input_password = event.get("password", "")
 
-    print("ServerId: {}, Username: {}, Protocol: {}, SourceIp: {}"
-          .format(input_serverId, input_username, input_protocol, input_sourceIp))
+    print(
+        "ServerId: {}, Username: {}, Protocol: {}, SourceIp: {}".format(
+            input_serverId, input_username, input_protocol, input_sourceIp
+        )
+    )
 
     # Check for password and set authentication type appropriately. No password means SSH auth
     print("Start User Authentication Flow")
@@ -36,7 +39,7 @@ def lambda_handler(event, context):
         print("Using PASSWORD authentication")
         authentication_type = "PASSWORD"
     else:
-        if input_protocol == 'FTP' or input_protocol == 'FTPS':
+        if input_protocol == "FTP" or input_protocol == "FTPS":
             print("Empty password not allowed for FTP/S")
             return {}
         print("Using SSH authentication")
@@ -131,8 +134,10 @@ def build_response(secret_dict, auth_type, input_protocol):
     # External Auth providers support chroot and virtual folder assignments so we'll check for that
     home_directory_details = lookup(secret_dict, "HomeDirectoryDetails", input_protocol)
     if home_directory_details:
-        print("HomeDirectoryDetails found - Applying setting for virtual folders - "
-              "Note: Cannot be used in conjunction with key: HomeDirectory")
+        print(
+            "HomeDirectoryDetails found - Applying setting for virtual folders - "
+            "Note: Cannot be used in conjunction with key: HomeDirectory"
+        )
         response_data["HomeDirectoryDetails"] = home_directory_details
         # If we have a virtual folder setup then we also need to set HomeDirectoryType to "Logical"
         print("Setting HomeDirectoryType to LOGICAL")
@@ -176,6 +181,10 @@ def get_secret(id):
             print("Found Binary Secret")
             return base64.b64decode(resp["SecretBinary"])
     except ClientError as err:
-        print("Error Talking to SecretsManager: " + err.response["Error"]["Code"] + ", Message: " +
-              err.response["Error"]["Message"])
+        print(
+            "Error Talking to SecretsManager: "
+            + err.response["Error"]["Code"]
+            + ", Message: "
+            + err.response["Error"]["Message"]
+        )
         return None
